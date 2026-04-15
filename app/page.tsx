@@ -7,6 +7,12 @@ export default function Home() {
         <h1 className="text-6xl font-bold text-center sm:text-left">
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+        <section className="mt-6 text-2xl text-center sm:text-left">
+          Get started by editing{" "}
+          <code className="p-3 font-mono text-lg bg-gray-100 rounded-md">
+            app/page.tsx
+          </code>
+        </section>
       </main>
     </div>
   );
