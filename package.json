@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run lint && next build",
+    "build": "npm run lint:build && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "lint:build": "eslint --max-warnings 0 --rule '@typescript-eslint/no-explicit-any:error' ."
   },
   "dependencies": {
     "next": "16.2.3",
