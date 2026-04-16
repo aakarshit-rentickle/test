@@ -19,6 +19,7 @@ env:
 
 jobs:
   deploy-dev:
+    name: Deploy To Dev
     runs-on: ubuntu-latest
 
     steps:
@@ -43,10 +44,10 @@ jobs:
         working-directory: ${{ inputs.service_dir }}
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build Vercel preview artifacts
+      - name: Build dev deployment artifacts
         working-directory: ${{ inputs.service_dir }}
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy preview artifacts
+      - name: Deploy to dev
         working-directory: ${{ inputs.service_dir }}
         run: vercel deploy --token=${{ secrets.VERCEL_TOKEN }}

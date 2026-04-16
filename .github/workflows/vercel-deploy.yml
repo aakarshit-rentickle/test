@@ -7,6 +7,7 @@ on:
 
 jobs:
   setup-service-context:
+    name: Setup Service Context
     uses: ./.github/workflows/setup-service-context.yml
     with:
       service_name: my-app
@@ -15,6 +16,7 @@ jobs:
     secrets: inherit
 
   test-and-lint:
+    name: Test And Lint
     needs: setup-service-context
     uses: ./.github/workflows/test-and-lint.yml
     with:
@@ -24,6 +26,7 @@ jobs:
     secrets: inherit
 
   build:
+    name: Build
     needs:
       - setup-service-context
       - test-and-lint
@@ -35,6 +38,7 @@ jobs:
     secrets: inherit
 
   deploy-dev:
+    name: Deploy To Dev
     if: ${{ github.ref != 'refs/heads/main' }}
     needs:
       - setup-service-context
@@ -47,6 +51,7 @@ jobs:
     secrets: inherit
 
   deploy-prod:
+    name: Deploy To Prod
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - setup-service-context
