@@ -1,0 +1,59 @@
+name: Frontend Vercel Deploy
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  setup-service-context:
+    uses: ./.github/workflows/setup-service-context.yml
+    with:
+      service_name: my-app
+      service_dir: .
+      node_version: "20"
+    secrets: inherit
+
+  test-and-lint:
+    needs: setup-service-context
+    uses: ./.github/workflows/test-and-lint.yml
+    with:
+      node_version: ${{ needs.setup-service-context.outputs.node_version }}
+      service_name: ${{ needs.setup-service-context.outputs.service_name }}
+      service_dir: ${{ needs.setup-service-context.outputs.service_dir }}
+    secrets: inherit
+
+  build:
+    needs:
+      - setup-service-context
+      - test-and-lint
+    uses: ./.github/workflows/build.yml
+    with:
+      node_version: ${{ needs.setup-service-context.outputs.node_version }}
+      service_name: ${{ needs.setup-service-context.outputs.service_name }}
+      service_dir: ${{ needs.setup-service-context.outputs.service_dir }}
+    secrets: inherit
+
+  deploy-dev:
+    if: ${{ github.ref != 'refs/heads/main' }}
+    needs:
+      - setup-service-context
+      - build
+    uses: ./.github/workflows/deploy-dev.yml
+    with:
+      node_version: ${{ needs.setup-service-context.outputs.node_version }}
+      service_name: ${{ needs.setup-service-context.outputs.service_name }}
+      service_dir: ${{ needs.setup-service-context.outputs.service_dir }}
+    secrets: inherit
+
+  deploy-prod:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs:
+      - setup-service-context
+      - build
+    uses: ./.github/workflows/deploy-prod.yml
+    with:
+      node_version: ${{ needs.setup-service-context.outputs.node_version }}
+      service_name: ${{ needs.setup-service-context.outputs.service_name }}
+      service_dir: ${{ needs.setup-service-context.outputs.service_dir }}
+    secrets: inherit

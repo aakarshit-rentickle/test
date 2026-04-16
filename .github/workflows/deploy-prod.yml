@@ -1,0 +1,52 @@
+name: Deploy Prod
+
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        required: true
+        type: string
+      service_name:
+        required: true
+        type: string
+      service_dir:
+        required: true
+        type: string
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.service_dir }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.service_dir }}
+        run: npm ci
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel
+
+      - name: Pull Vercel production environment information
+        working-directory: ${{ inputs.service_dir }}
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Vercel production artifacts
+        working-directory: ${{ inputs.service_dir }}
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy production artifacts
+        working-directory: ${{ inputs.service_dir }}
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
