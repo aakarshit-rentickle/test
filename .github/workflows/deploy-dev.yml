@@ -6,6 +6,9 @@ on:
       node_version:
         required: true
         type: string
+      should_deploy:
+        required: true
+        type: boolean
       service_name:
         required: true
         type: string
@@ -23,10 +26,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Skip dev deployment on main
+        if: ${{ !inputs.should_deploy }}
+        run: echo "Skipping dev deployment because this run is for the main branch."
+
       - name: Checkout code
+        if: ${{ inputs.should_deploy }}
         uses: actions/checkout@v6
 
       - name: Set up Node.js
+        if: ${{ inputs.should_deploy }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
@@ -34,20 +43,25 @@ jobs:
           cache-dependency-path: ${{ inputs.service_dir }}/package-lock.json
 
       - name: Install dependencies
+        if: ${{ inputs.should_deploy }}
         working-directory: ${{ inputs.service_dir }}
         run: npm ci
 
       - name: Install Vercel CLI
+        if: ${{ inputs.should_deploy }}
         run: npm install --global vercel
 
       - name: Pull Vercel preview environment information
+        if: ${{ inputs.should_deploy }}
         working-directory: ${{ inputs.service_dir }}
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build dev deployment artifacts
+        if: ${{ inputs.should_deploy }}
         working-directory: ${{ inputs.service_dir }}
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to dev
+        if: ${{ inputs.should_deploy }}
         working-directory: ${{ inputs.service_dir }}
         run: vercel deploy --token=${{ secrets.VERCEL_TOKEN }}

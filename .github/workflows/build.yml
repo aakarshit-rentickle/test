@@ -1,4 +1,4 @@
-name: Build Dev
+name: Build
 
 on:
   workflow_call:
@@ -14,8 +14,8 @@ on:
         type: string
 
 jobs:
-  build-dev:
-    name: Build For Dev
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -33,6 +33,6 @@ jobs:
         working-directory: ${{ inputs.service_dir }}
         run: npm ci
 
-      - name: Build application for dev validation
+      - name: Build application
         working-directory: ${{ inputs.service_dir }}
         run: npm run build
