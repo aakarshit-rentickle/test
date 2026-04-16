@@ -25,12 +25,26 @@ jobs:
       service_dir: ${{ needs.setup-service-context.outputs.service_dir }}
     secrets: inherit
 
-  build:
-    name: Build
+  build-dev:
+    name: Build For Dev
+    if: ${{ github.ref != 'refs/heads/main' }}
     needs:
       - setup-service-context
       - test-and-lint
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/build-dev.yml
+    with:
+      node_version: ${{ needs.setup-service-context.outputs.node_version }}
+      service_name: ${{ needs.setup-service-context.outputs.service_name }}
+      service_dir: ${{ needs.setup-service-context.outputs.service_dir }}
+    secrets: inherit
+
+  build-prod:
+    name: Build For Prod
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs:
+      - setup-service-context
+      - test-and-lint
+    uses: ./.github/workflows/build-prod.yml
     with:
       node_version: ${{ needs.setup-service-context.outputs.node_version }}
       service_name: ${{ needs.setup-service-context.outputs.service_name }}
@@ -42,7 +56,7 @@ jobs:
     if: ${{ github.ref != 'refs/heads/main' }}
     needs:
       - setup-service-context
-      - build
+      - build-dev
     uses: ./.github/workflows/deploy-dev.yml
     with:
       node_version: ${{ needs.setup-service-context.outputs.node_version }}
@@ -55,7 +69,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - setup-service-context
-      - build
+      - build-prod
     uses: ./.github/workflows/deploy-prod.yml
     with:
       node_version: ${{ needs.setup-service-context.outputs.node_version }}
