@@ -1,0 +1,37 @@
+name: Test And Lint
+
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        required: true
+        type: string
+      service_name:
+        required: true
+        type: string
+      service_dir:
+        required: true
+        type: string
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.service_dir }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.service_dir }}
+        run: npm ci
+
+      - name: Run linter
+        working-directory: ${{ inputs.service_dir }}
+        run: npm run lint
