@@ -11,6 +11,14 @@ export default function Home() {
             app/page.tsx
           </code>
         </section>
+        <section>
+          <a
+            href="https://nextjs.org/docs"
+            className="mt-6 text-2xl text-center sm:text-left"
+          >
+            Read the docs
+          </a>
+        </section>
       </main>
     </div>
   );
