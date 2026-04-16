@@ -19,14 +19,15 @@ env:
 
 jobs:
   deploy-prod:
+    name: Deploy To Prod
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node_version }}
           cache: npm
@@ -43,10 +44,10 @@ jobs:
         working-directory: ${{ inputs.service_dir }}
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build Vercel production artifacts
+      - name: Build prod deployment artifacts
         working-directory: ${{ inputs.service_dir }}
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy production artifacts
+      - name: Deploy to prod
         working-directory: ${{ inputs.service_dir }}
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
